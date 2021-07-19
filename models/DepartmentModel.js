@@ -1,13 +1,19 @@
 const mongoose = require("mongoose");
-const { stringify } = require("querystring");
-const Schema = mongoose.Schema;
 
-mongoose.Promise = require("bluebird");
 
-const Department = new Schema ({
-    "branchId": String,
-    "description": String,
-    "name": String
+const Department = mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    branchId: {
+        type: String,
+        required: true
+    },
+    description:{
+        type: String,
+        required: false
+    }
 });
 
-module.exports = mongoose.model("Departments", Department, "Departments");
+module.exports = mongoose.model("Department", Department, "Departments");

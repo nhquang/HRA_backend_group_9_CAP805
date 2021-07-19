@@ -8,10 +8,6 @@ router.use(function timeLog (req, res, next) {
     next();
 });
 
-router.use(function cors (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*")
-    next();
-});
 
 router.get('/', function (req, res) {
     DepartmentModel
