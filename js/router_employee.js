@@ -12,6 +12,26 @@ router.get('/', function (req, res) {
         .catch((err) => { console.log("An error occurred: ${err}" + err) });
 });
 
+router.get('/active_employees', (req, res) => {
+    EmployeeModel
+    .find({stillEmployed: true})
+    .exec()
+    .then((list)=>{
+        res.json(list);
+    })
+    .catch((err) => { console.log("An error occurred: ${err}" + err) });
+});
+
+router.get('/inactive_employees', (req, res) => {
+    EmployeeModel
+    .find({stillEmployed: false})
+    .exec()
+    .then((list)=>{
+        res.json(list);
+    })
+    .catch((err) => { console.log("An error occurred: ${err}" + err) });
+});
+
 router.get('/:id', (req, res) => {
     EmployeeModel
         .findOne({_id: req.params.id})
