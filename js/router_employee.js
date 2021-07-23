@@ -32,26 +32,24 @@ router.post('/add_employee', (req, res) => {
 
 router.put('/update_employee/:id', (req, res) => {
     EmployeeModel.findOneAndUpdate({_id: req.params.id},
-        req.body, {new: true},(err,doc)=>{
+        req.body, {new: true},(err, data)=>{
             if (err) {
                 res.status(400).json({ message: err });
             }
             else {
-                res.status(200).json({message: doc});
+                res.status(200).json(data);
             }
-              
-              
         }
     );
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/delete_employee/:id', (req, res) => {
     EmployeeModel.deleteOne({ _id: req.params.id },(err, member)=>{
         if (err) {
             res.status(400).json({ message: err });
         }
         else {
-            res.json(req.params.id + " deleted");
+            res.json(req.params.id + " deleted!!!");
         }
     });
 });
