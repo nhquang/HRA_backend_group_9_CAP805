@@ -13,6 +13,10 @@ const Department = mongoose.Schema({
     description:{
         type: String,
         required: false
+    },
+    active: {
+        type: Boolean,
+        required: true
     }
 });
 
