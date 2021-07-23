@@ -1,4 +1,5 @@
 const express = require('express');
+const { query, validationResult } = require('express-validator');
 const router = express.Router();
 const DepartmentModel = require('../models/DepartmentModel');
 
@@ -8,8 +9,22 @@ router.use(function timeLog (req, res, next) {
     next();
 });
 
+router.get(''
+    , query('branchId', 'must have branchId').notEmpty()
+    , query('pageNum', 'must have pageNum').notEmpty()
+    , query('pageSize', 'must have pageSize').notEmpty()
+    , function (req, res) {
 
-router.get('/', function (req, res) {
+    let branchId = req.query.branchId;
+    let pageNum = req.query.pageNum;
+    let pageSize = req.query.pageSize;
+    console.log([branchId, pageNum, pageSize]);
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
     DepartmentModel
         .find()
         .exec()
