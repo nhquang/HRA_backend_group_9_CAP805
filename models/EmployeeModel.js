@@ -87,12 +87,6 @@ const Employee = mongoose.Schema({
         type: String,
         required: false
     },
-    activationCode:{
-        type: String,
-        required: true,
-        unique: true,
-        index: true
-    },
     deparmentId: {
         type: String,
         required: true
