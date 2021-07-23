@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
+const bodyParser = require('body-parser');
 const dotenv = require("dotenv");
 const HTTP_PORT = process.env.PORT || 8080;
 
@@ -30,8 +31,11 @@ mongoose.connect(
         res.header("Access-Control-Allow-Origin", "*")
         next();
     });
+
+    app.use(bodyParser.json());
     app.use('/departments', require('./js/router_department'));
     app.use('/branches', require('./js/router_branch'));
+    app.use('/employees', require('./js/router_employee'));
 
     app.use((req, res, next) => {
         res.status(404).send("Not Found");
