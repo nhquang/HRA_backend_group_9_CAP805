@@ -11,30 +11,33 @@ router.use(function timeLog (req, res, next) {
 
 router.get(''
     , query('branchId', 'must have branchId').notEmpty()
-    , query('pageNum', 'must have pageNum').notEmpty()
-    , query('pageSize', 'must have pageSize').notEmpty()
-    , function (req, res) {
+    , query('page', 'must have page').notEmpty()
+    , async (req, res) => {
 
-    let branchId = req.query.branchId;
-    let pageNum = req.query.pageNum;
-    let pageSize = req.query.pageSize;
-    console.log([branchId, pageNum, pageSize]);
+    const { page = 1, limit = 10 } = req.query;
+    const branchId = req.query.branchId;
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
 
-    DepartmentModel
-        .find()
-        .exec()
-        .then((list)=>{
-            res.json(list);
-        })
-        .catch((err) => { console.log("An error occurred: ${err}" + err) });
+    const list = await DepartmentModel
+        .find({branchId: branchId})
+        .limit(limit * 1)
+        .skip((page - 1) * limit)
+        .exec();
+
+    const count = await DepartmentModel.countDocuments({branchId: branchId});
+
+    res.json({
+        totalPages: Math.ceil(count / limit),
+        currentPage: page,
+        list,
+    });
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
     DepartmentModel
         .findOne({_id: req.params.id})
         .exec()
@@ -44,15 +47,16 @@ router.get('/:id', (req, res) => {
         .catch((err) => { console.log("An error occurred: ${err}" + err) });
 });
 
-router.post('/:id', (req, res) => {
+router.post('/:id', async (req, res) => {
+
     return res.send('POST');
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
     return res.send('PUT');
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
     return res.send('DELETE');
 });
 
