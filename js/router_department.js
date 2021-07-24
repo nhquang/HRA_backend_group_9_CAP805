@@ -2,19 +2,12 @@ const express = require('express');
 const { query, validationResult } = require('express-validator');
 const router = express.Router();
 const DepartmentModel = require('../models/DepartmentModel');
-
-// middleware that is specific to this router
-router.use(function timeLog (req, res, next) {
-    console.log('Time: ', Date.now());
-    next();
-});
+const EmployeeModel = require('../models/EmployeeModel');
 
 router.get(''
     , query('branchId', 'must have branchId').notEmpty()
-    , query('page', 'must have page').notEmpty()
     , async (req, res) => {
 
-    const { page = 1, limit = 10 } = req.query;
     const branchId = req.query.branchId;
 
     const errors = validationResult(req);
@@ -23,18 +16,10 @@ router.get(''
     }
 
     const list = await DepartmentModel
-        .find({branchId: branchId})
-        .limit(limit * 1)
-        .skip((page - 1) * limit)
+        .find({branchId: branchId, active: true})
         .exec();
 
-    const count = await DepartmentModel.countDocuments({branchId: branchId});
-
-    res.json({
-        totalPages: Math.ceil(count / limit),
-        currentPage: page,
-        list,
-    });
+    res.json(list);
 });
 
 router.get('/:id', async (req, res) => {
@@ -47,17 +32,47 @@ router.get('/:id', async (req, res) => {
         .catch((err) => { console.log("An error occurred: ${err}" + err) });
 });
 
-router.post('/:id', async (req, res) => {
-
-    return res.send('POST');
+router.post('', async (req, res) => {
+    DepartmentModel.create(req.body).then((data)=>{
+        res.json(data);
+    }).catch((err)=>{
+        res.status(400).json({ message: err });
+    });
 });
 
 router.put('/:id', async (req, res) => {
-    return res.send('PUT');
+    DepartmentModel.findOneAndUpdate({_id: req.params.id},
+        req.body, {new: true},(err, data)=>{
+            if (err) {
+                res.status(400).json({ message: err });
+            }
+            else {
+                res.status(200).json(data);
+            }
+        }
+    );
 });
 
 router.delete('/:id', async (req, res) => {
-    return res.send('DELETE');
+    //only can delete departments with no employee
+    console.log("delete_department");
+    const departmentId = req.params.id;
+    const list  = await EmployeeModel
+        .find({deparmentId: departmentId, stillEmployed: true})
+        .exec();
+    if(list.length!=0){
+        return res.status(400).json({ message: "can not delete departments with employee" });
+    }
+    DepartmentModel.findOneAndUpdate({_id: departmentId},
+        {active: false}, null,(err, data)=>{
+            if (err) {
+                res.status(400).json({ message: err });
+            }
+            else {
+                res.status(200).json(data);
+            }
+        }
+    );
 });
 
 module.exports = router
