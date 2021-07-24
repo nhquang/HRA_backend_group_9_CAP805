@@ -33,6 +33,7 @@ mongoose.connect(
     });
 
     app.use(bodyParser.json());
+    app.use('/register', require('./js/router_register'));
     app.use('/departments', require('./js/router_department'));
     app.use('/branches', require('./js/router_branch'));
     app.use('/employees', require('./js/router_employee'));
