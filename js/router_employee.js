@@ -70,29 +70,118 @@ router.get('/', function (req, res) {
 });
 
 router.get('/active_employees', (req, res) => {
-    EmployeeModel
-    .find({stillEmployed: true})
-    .exec()
-    .then((list)=>{
-        res.json(list);
-    })
-    .catch((err) => {
-        console.log("An error occurred: ${err}" + err);
-        res.status(500).json({message: "Internal Server Error!"});
-    });
+    if(req.decoded.role === 'admin'){
+        EmployeeModel
+        .find({stillEmployed: true})
+        .exec()
+        .then((list)=>{
+            res.json(list);
+        })
+        .catch((err) => {
+            console.log("An error occurred: ${err}" + err);
+            res.status(500).json({message: "Internal Server Error!"});
+        });
+    }
+    else if (req.decoded.role === 'hr_manager'){
+        EmployeeModel
+        .find({
+            $or: [
+                { stillEmployed: true, role : "employee"},
+                { stillEmployed: true, role :  "hr_staff"},
+                { username :  req.decoded.username }
+            ]
+        })
+        .exec()
+        .then((list)=>{
+            res.json(list);
+        })
+        .catch((err) => {
+            console.log("An error occurred: ${err}" + err);
+            res.status(500).json({message: "Internal Server Error!"});
+        });
+    }
+    else if (req.decoded.role === 'hr_staff'){
+        EmployeeModel
+        .find({
+            $or: [
+                { stillEmployed: true, role : "employee"},
+                { username :  req.decoded.username }
+            ]
+        })
+        .exec()
+        .then((list)=>{
+            res.json(list);
+        })
+        .catch((err) => {
+            console.log("An error occurred: ${err}" + err);
+            res.status(500).json({message: "Internal Server Error!"});
+        });
+    }
+    else {
+        EmployeeModel
+        .find({ username :  req.decoded.username })
+        .exec()
+        .then((list)=>{
+            res.json(list);
+        })
+        .catch((err) => {
+            console.log("An error occurred: ${err}" + err);
+            res.status(500).json({message: "Internal Server Error!"});
+        });
+    }
 });
 
 router.get('/inactive_employees', (req, res) => {
-    EmployeeModel
-    .find({stillEmployed: false})
-    .exec()
-    .then((list)=>{
-        res.json(list);
-    })
-    .catch((err) => {
-        console.log("An error occurred: ${err}" + err);
-        res.status(500).json({message: "Internal Server Error!"});
-    });
+    if(req.decoded.role === 'admin'){
+        EmployeeModel
+        .find({stillEmployed: false})
+        .exec()
+        .then((list)=>{
+            res.json(list);
+        })
+        .catch((err) => {
+            console.log("An error occurred: ${err}" + err);
+            res.status(500).json({message: "Internal Server Error!"});
+        });
+    }
+    else if (req.decoded.role === 'hr_manager'){
+        EmployeeModel
+        .find({
+            $or: [
+                { stillEmployed: false, role : "employee"},
+                { stillEmployed: false, role :  "hr_staff"}
+            ]
+        })
+        .exec()
+        .then((list)=>{
+            res.json(list);
+        })
+        .catch((err) => {
+            console.log("An error occurred: ${err}" + err);
+            res.status(500).json({message: "Internal Server Error!"});
+        });
+    }
+    else if (req.decoded.role === 'hr_staff'){
+        EmployeeModel
+        .find({
+            $or: [
+                { stillEmployed: false, role : "employee"}
+            ]
+        })
+        .exec()
+        .then((list)=>{
+            res.json(list);
+        })
+        .catch((err) => {
+            console.log("An error occurred: ${err}" + err);
+            res.status(500).json({message: "Internal Server Error!"});
+        });
+    }
+    else {
+        res.status(401).json({
+            message:"Unauthorized access!"
+        });
+    }
 });
 
 //any role can access their own info.
@@ -159,8 +248,8 @@ router.put('/update_employee/:id', (req, res) => {
         EmployeeModel.findOneAndUpdate({_id: req.params.id},
             req.body, {new: true},(err, data)=>{
                 if (err) {
-                    res.status(500).json({ message: "Internal Server Error!" });
-                    console.log()
+                    console.log("An error occurred: ${err}" + err);
+                    res.status(500).json({message: "Internal Server Error!"});
                 }
                 else {
                     res.status(200).json(data);
@@ -176,14 +265,51 @@ router.put('/update_employee/:id', (req, res) => {
 });
 
 router.delete('/delete_employee/:id', (req, res) => {
-    EmployeeModel.deleteOne({ _id: req.params.id },(err, member)=>{
-        if (err) {
-            res.status(400).json({ message: err });
+    // EmployeeModel.deleteOne({ _id: req.params.id },(err, member)=>{
+    //     if (err) {
+    //         res.status(400).json({ message: err });
+    //     }
+    //     else {
+    //         res.json(req.params.id + " deleted!!!");
+    //     }
+    // });
+    EmployeeModel
+    .findOne({_id: req.params.id})
+    .exec()
+    .then((employee)=>{
+        if(req.decoded.role === "admin"
+            || (req.decoded.role === "hr_manager" && employee.role !== "admin")
+            || (req.decoded.role === "hr_staff" && employee.role === "employee")
+        )
+        {
+            EmployeeModel.findOneAndUpdate(
+                {_id: req.params.id},
+                {
+                    $set: {
+                        stillEmployed: false
+                    }
+                },
+                (err, data)=>{
+                    if (err) {
+                        res.status(500).json({ message: "Internal Server Error!" });
+                        console.log(err);
+                    }
+                    else {
+                        res.status(200).json("Succeeded!");
+                    }
+            });
         }
-        else {
-            res.json(req.params.id + " deleted!!!");
+        else{
+            console.log("asdasda" + " " + req.decoded.role + " " + req.body.role);
+            res.status(401).json({
+                message:"Unauthorized access!"
+            });
         }
-    });
+    })
+    .catch((err)=>{
+        console.log("An error occurred: ${err}" + err);
+        res.status(500).json({message: "Internal Server Error!"});
+    })
 });
 
 module.exports = router

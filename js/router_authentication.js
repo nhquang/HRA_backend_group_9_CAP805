@@ -25,6 +25,7 @@ router.post('/login',(req,res)=>{
                         });
                         res.json({message: "Succeeded!", token: token});
                     }
+                    else if(err) res.status(500).json({message:"Internal Server Error!"});
                     else res.json({message:'Failed!'});
                 });
                 
