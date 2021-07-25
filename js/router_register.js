@@ -5,15 +5,14 @@ const router = express.Router();
 const EmployeeModel = require('../models/EmployeeModel');
 
 router.post(''
-    , body('username').notEmpty().custom(value => {
+
+    , body('username').notEmpty().bail().custom(value => {
         return EmployeeModel.findOne({username: value}).then(user => {
-            if(!user){
-                return Promise.reject('user not exists');
-            }else if (user.password) {
-                return Promise.reject('user already registered');
+            if(user){
+                return Promise.reject('username exists, please choose another username');
             }
         });
-    }).bail()
+    })
     , body('password', ).isLength({ min: 6 })
     , body('confirmPassword', ).custom((value, { req }) => {
         if (value !== req.body.password) {
@@ -22,15 +21,20 @@ router.post(''
         // Indicates the success of this synchronous custom validator
         return true;
     })
-    , body('activationCode', 'must have activationCode').notEmpty().custom((value, { req }) => {
-        return EmployeeModel.findOne({username: req.body.username}).then(user => {
-            if (user._id!=value) {
-                return Promise.reject('activation code not match');
-            }
-        });
-    })
+    , body('activationCode', 'must have activationCode').notEmpty().bail()
+        .custom((value, { req }) => {
+            return EmployeeModel.findOne({_id: value}).then(user => {
+                if (!user) {
+                    return Promise.reject('activation code not exists');
+                }else if(user.username && user.password){
+                    return Promise.reject('user already activated');
+                }
+            });
+        })
+
     , async (req, res) => {
 
+        const username = req.body.username;
         const password = req.body.password;
         const activationCode = req.body.activationCode; //activation code is the id
 
@@ -41,7 +45,7 @@ router.post(''
 
         bcrypt.hash(password, 10, function(err, hash) {
             EmployeeModel.findOneAndUpdate({_id: activationCode},
-                {password: hash}, null,(err, data)=>{
+                {username: username, password: hash}, null,(err, data)=>{
                     if (err) {
                         res.status(400).json({ message: err });
                     }else {
@@ -50,14 +54,6 @@ router.post(''
                 }
             );
         });
-});
-
-router.get('/test_password', function (req, res) {
-    EmployeeModel.findOne({username: "test1"}).then(user => {
-        bcrypt.compare("123456", user.password, function(err, result) {
-            res.status(200).json(result);
-        });
     });
-});
 
 module.exports = router
