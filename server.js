@@ -59,22 +59,24 @@ function verify(req,res,next){
         jwt.verify(token, process.env.jwt_secret, function(err, decoded) {
             if (err) res.status(401).json({ message: "Invalid token!"});
             else{
-                EmployeeModel
-                .findOne({username: decoded.username})
-                .exec()
-                .then((data)=>{
-                    if(data){
-                        req.decoded = decoded;
-                        next();
-                    }
-                    else res.status(401).send({ message: "Invalid token!"});
-                })
-                .catch((err) => {
-                    console.log("An error occurred: ${err}" + err);
-                    res.status(500).json({
-                        message: "Internal Server Error!"
-                    });
-                });
+                // EmployeeModel
+                // .findOne({username: decoded.username})
+                // .exec()
+                // .then((data)=>{
+                //     if(data){
+                //         req.decoded = decoded;
+                //         next();
+                //     }
+                //     else res.status(401).send({ message: "Invalid token!"});
+                // })
+                // .catch((err) => {
+                //     console.log("An error occurred: ${err}" + err);
+                //     res.status(500).json({
+                //         message: "Internal Server Error!"
+                //     });
+                // });
+                req.decoded = decoded;
+                next();
             }
         });
     } else {
