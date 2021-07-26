@@ -19,6 +19,13 @@ parameters: the login info json
     "password": "123456"
 }
 ```
+return status success (200)
+```json
+{
+    "message": "Succeeded!",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5ocXVhbmciLCJyb2xlIjoiaHJfc3RhZmYiLCJpYXQiOjE2MjcyNjc2MzEsImV4cCI6MTYyNzI3MTIzMX0.FAjzfkRIeF-I6q-_u_0mSUiKuCBTMYEjUeqhaTIYMqQ"
+}
+```
 ### POST /account/update_account
 parameters: the update account info json
 ```json
@@ -34,17 +41,24 @@ headers: the update account info json
     "Authorization": "Bearer 'token'"
 }
 ```
-### GET /account/
-return: username
-```json
-{
-    "username": "testing"
-}
-```
-headers: 
+return status success (200), if successful
 ```json
 {
     "Authorization": "Bearer 'token'"
+}
+```
+### GET /account/
+headers: 
+```json
+{
+    "message": "update account success"
+}
+```
+
+return: status success (200) if successful
+```json
+{
+    "username": "testing"
 }
 ```
 
