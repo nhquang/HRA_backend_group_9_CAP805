@@ -19,7 +19,7 @@ parameters: the login info json
     "password": "123456"
 }
 ```
-return status success (200)
+return status success (200) if successful
 ```json
 {
     "message": "Succeeded!",
@@ -44,14 +44,14 @@ headers: the update account info json
 return status success (200), if successful
 ```json
 {
-    "Authorization": "Bearer 'token'"
+    "message": "update account success"
 }
 ```
 ### GET /account/
 headers: 
 ```json
 {
-    "message": "update account success"
+    "Authorization": "Bearer 'token'"
 }
 ```
 

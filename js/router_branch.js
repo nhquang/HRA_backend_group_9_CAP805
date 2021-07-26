@@ -11,6 +11,7 @@ router.get("/", (req,res) => {
     })
     .catch((err)=>{
         console.log(`An error occurred: ${err}`);
+        res.status(500).json({message:"Internal Server Error!"});
     });
 });
 
@@ -21,7 +22,10 @@ router.get('/active_branches', (req, res) => {
     .then((list)=>{
         res.json(list);
     })
-    .catch((err) => { console.log("An error occurred: ${err}" + err) });
+    .catch((err) => {
+        console.log("An error occurred: ${err}" + err);
+        res.status(500).json({message:"Internal Server Error!"});
+    });
 });
 
 router.get('/inactive_branches', (req, res) => {
@@ -31,7 +35,10 @@ router.get('/inactive_branches', (req, res) => {
     .then((list)=>{
         res.json(list);
     })
-    .catch((err) => { console.log("An error occurred: ${err}" + err) });
+    .catch((err) => {
+        console.log("An error occurred: ${err}" + err);
+        res.status(500).json({message:"Internal Server Error!"});
+    });
 });
 
 router.get("/:id", (req,res) =>{
@@ -43,6 +50,7 @@ router.get("/:id", (req,res) =>{
     })
     .catch(() => {
         console.log(`An error occurred: ${err}`);
+        res.status(500).json({message:"Internal Server Error!"});
     });
 });
 
