@@ -21,7 +21,7 @@ router.post('/login',(req,res)=>{
                             role: user.role
                         }
                         const token = jwt.sign(payload, process.env.jwt_secret, {
-                            expiresIn: 3600 
+                            expiresIn: '4h' 
                         });
                         res.json({message: "Succeeded!", token: token});
                     }
