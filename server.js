@@ -3,9 +3,10 @@ const mongoose = require("mongoose");
 const app = express();
 const bodyParser = require('body-parser');
 const dotenv = require("dotenv");
-const EmployeeModel = require('./models/EmployeeModel');
+//const EmployeeModel = require('./models/EmployeeModel');
 const jwt = require('jsonwebtoken');
 const HTTP_PORT = process.env.PORT || 8080;
+var cors = require('cors')
 
 dotenv.config();
 mongoose.connect(
@@ -29,6 +30,7 @@ mongoose.connect(
     //         next();
     //     }
     // }
+    app.use(cors());
     app.use(function cors (req, res, next) {
         res.header("Access-Control-Allow-Origin", "*")
         next();
