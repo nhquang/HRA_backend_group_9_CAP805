@@ -31,10 +31,10 @@ mongoose.connect(
     //     }
     // }
     app.use(cors());
-    app.use(function cors (req, res, next) {
-        res.header("Access-Control-Allow-Origin", "*")
-        next();
-    });
+    // app.use(function cors (req, res, next) {
+    //     res.header("Access-Control-Allow-Origin", "*")
+    //     next();
+    // });
 
     app.use(bodyParser.json());
     app.use('/register', require('./js/router_register'));
