@@ -13,7 +13,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use('/register', require('./js/router_register'));
 app.use('/authenticate', require('./js/router_authentication'));
-app.use('/departments', require('./js/router_department'));
+app.use('/departments', verify, require('./js/router_department'));
 app.use('/branches', require('./js/router_branch'));
 app.use('/employees', verify, require('./js/router_employee'));
 app.use('/account',verify, require('./js/router_account'));

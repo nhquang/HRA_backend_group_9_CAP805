@@ -4,6 +4,10 @@ const router = express.Router();
 const DepartmentModel = require('../models/DepartmentModel');
 const EmployeeModel = require('../models/EmployeeModel');
 
+
+// anyone can access departments, but for adding and updating, only admin can do those things
+// you can get the role from req.decoded.role
+
 router.get(''
     , query('branchId', 'must have branchId').notEmpty()
     , async (req, res) => {
@@ -33,6 +37,11 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('', async (req, res) => {
+    if(req.decoded.role !== 'admin'){
+        res.status(400).json({ message: "permission deny" });
+        return
+    }
+
     DepartmentModel.create(req.body).then((data)=>{
         res.json(data);
     }).catch((err)=>{
@@ -41,6 +50,11 @@ router.post('', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
+    if(req.decoded.role !== 'admin'){
+        res.status(400).json({ message: "permission deny" });
+        return
+    }
+
     DepartmentModel.findOneAndUpdate({_id: req.params.id},
         req.body, {new: true},(err, data)=>{
             if (err) {
@@ -54,6 +68,11 @@ router.put('/:id', async (req, res) => {
 });
 
 router.delete('/:id', async (req, res) => {
+    if(req.decoded.role !== 'admin'){
+        res.status(400).json({ message: "permission deny" });
+        return
+    }
+
     //only can delete departments with no employee
     console.log("delete_department");
     const departmentId = req.params.id;

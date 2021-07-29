@@ -16,12 +16,19 @@ const testData = {
     "active": true,
     "__v": 0
 }
+let token = "";
 
 beforeAll(async () => {
     await mongoose.connect(
         process.env.DB_CONNECTION_STRING,
         {useNewUrlParser: true, useUnifiedTopology: true}
     );
+
+    const response  = await request(app).post('/authenticate/login').send({
+            username: process.env.admin_username,
+            password: process.env.admin_password,
+        });
+    token = response.body.token;
 });
 
 afterAll(async () => {
@@ -34,11 +41,14 @@ describe("Test add department", () => {
         request(app)
             .post("/departments")
             .send(testData)
+            .set('Authorization', `Bearer ${token}`)
             .then(response => {
+                // console.log(response.body.message);
                 expect(response.statusCode).toBe(200);
                 //check data
                 request(app)
                     .get("/departments/"+objId)
+                    .set('Authorization', `Bearer ${token}`)
                     .then(response => {
                         expect(response.statusCode).toBe(200);
                         expect(response.body).toEqual(testData);
@@ -52,12 +62,15 @@ describe("Test delete department", () => {
     test("It should delete a department in the db",   done => {
         request(app)
             .delete("/departments/"+objId)
+            .set('Authorization', `Bearer ${token}`)
             .then(response => {
+                // console.log(response.body.message);
                 expect(response.statusCode).toBe(200);
                 //check data
                 testData.active = false;
                 request(app)
                     .get("/departments/"+objId)
+                    .set('Authorization', `Bearer ${token}`)
                     .then(response => {
                         expect(response.statusCode).toBe(200);
                         expect(response.body).toEqual(testData);
