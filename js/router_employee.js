@@ -10,7 +10,7 @@ router.get('/', function (req, res) {
     console.log(req.decoded);
     if(req.decoded.role === 'employee'){
         EmployeeModel
-        .findOne({username: req.decoded.username})
+        .findOne({_id: req.decoded.id})
         .exec()
         .then((data)=>{
             res.json(data);
@@ -25,7 +25,7 @@ router.get('/', function (req, res) {
         .find({
             $or: [
               { role : "employee" },
-              { username :  req.decoded.username }
+              { _id :  req.decoded.id }
             ]
         })
         .exec()
@@ -43,7 +43,7 @@ router.get('/', function (req, res) {
             $or: [
               { role : "employee" },
               { role :  "hr_staff"},
-              { username :  req.decoded.username }
+              { _id :  req.decoded.id }
             ]
         })
         .exec()
@@ -88,7 +88,7 @@ router.get('/active_employees', (req, res) => {
             $or: [
                 { stillEmployed: true, role : "employee"},
                 { stillEmployed: true, role :  "hr_staff"},
-                { username :  req.decoded.username }
+                { _id :  req.decoded.id }
             ]
         })
         .exec()
@@ -105,7 +105,7 @@ router.get('/active_employees', (req, res) => {
         .find({
             $or: [
                 { stillEmployed: true, role : "employee"},
-                { username :  req.decoded.username }
+                { _id :  req.decoded.id }
             ]
         })
         .exec()
@@ -119,7 +119,7 @@ router.get('/active_employees', (req, res) => {
     }
     else {
         EmployeeModel
-        .find({ username :  req.decoded.username })
+        .find({ _id :  req.decoded.id })
         .exec()
         .then((list)=>{
             res.json(list);
@@ -193,7 +193,8 @@ router.get('/:id', (req, res) => {
     .findOne({_id: req.params.id})
     .exec()
     .then((data)=>{
-        if(data.username === req.decoded.username
+        if(!data) res.json({});
+        else if(data._id == req.decoded.id
             || req.decoded.role === "admin"
             || (req.decoded.role === "hr_staff" && data.role === "employee")
             || (req.decoded.role === "hr_manager" && data.role !== "admin")
@@ -295,12 +296,11 @@ router.delete('/delete_employee/:id', (req, res) => {
                         console.log(err);
                     }
                     else {
-                        res.status(200).json("Succeeded!");
+                        res.status(200).json({message: "Succeeded!"});
                     }
             });
         }
         else{
-            console.log("asdasda" + " " + req.decoded.role + " " + req.body.role);
             res.status(401).json({
                 message:"Unauthorized access!"
             });

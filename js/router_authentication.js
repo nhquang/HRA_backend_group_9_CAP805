@@ -17,6 +17,7 @@ router.post('/login',(req,res)=>{
                 bcrypt.compare(req.body.password, user.password, function(err, result) {
                     if(result){
                         const payload = {
+                            id: user._id,
                             username: user.username,
                             role: user.role
                         }
@@ -30,7 +31,7 @@ router.post('/login',(req,res)=>{
                 });
                 
             }
-        })
+        });
     }
     else {
         res.json({message:'Failed!'});

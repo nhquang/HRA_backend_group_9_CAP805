@@ -57,7 +57,7 @@ mongoose.connect(
 
 function verify(req,res,next){
     const token = req.headers['authorization'].substring(7);
-    console.log(token);
+    //console.log(token);
     if (token) {
         jwt.verify(token, process.env.jwt_secret, function(err, decoded) {
             if (err) res.status(401).json({ message: "Invalid token!"});
