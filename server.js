@@ -83,8 +83,6 @@ function verify(req,res,next){
             }
         });
     } else {
-        res.status(401).json({
-            message:"Unauthorized access!"
-        });
+        res.status(401).json({message:"Invalid token!"});
     }
 }
