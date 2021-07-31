@@ -64,7 +64,89 @@ return: status success (200) if successful
 
 ## 2. Branch
 
-to be added
+### GET /branches/
+return: branch list for the branch
+```json
+[
+  {
+        "_id": "60cd81a14bc20369accb585e",
+        "name": "Headquarter",
+        "streetAddress": "1 Yonge Street",
+        "city": "Toronto",
+        "province": "Ontario",
+        "country": "Canada",
+        "description": "HQ",
+        "active": true
+    }
+]
+```
+headers: 
+```json
+{
+    "Authorization": "Bearer 'token'"
+}
+```
+
+### GET /branches/:id
+return: a branch
+```json
+{
+        "_id": "60cd81a14bc20369accb585e",
+        "name": "Headquarter",
+        "streetAddress": "1 Yonge Street",
+        "city": "Toronto",
+        "province": "Ontario",
+        "country": "Canada",
+        "description": "HQ",
+        "active": true
+}
+```
+headers: 
+```json
+{
+    "Authorization": "Bearer 'token'"
+}
+```
+
+### POST /branches/add_branch
+parameters:
+```json
+{
+    "name": "Dubai",
+    "streetAddress": "12 Random",
+    "city": "Dubai",
+    "province": "Dubai",
+    "country": "United Arab Emirates",
+    "description": "Middle East"
+}
+```
+headers: 
+```json
+{
+    "Authorization": "Bearer 'token'"
+}
+```
+return: status success (200) and the new branch object, if added successfully
+
+### POST /branches/update_branch/:id
+parameters:
+```json
+{
+    "name": "Dubai",
+    "streetAddress": "12 Random",
+    "city": "Dubai",
+    "province": "Dubai",
+    "country": "United Arab Emirates",
+    "description": "Middle East"
+}
+```
+headers: 
+```json
+{
+    "Authorization": "Bearer 'token'"
+}
+```
+return: status success (200) and the updated branch object, if added successfully
 
 ## 3. Department
 
