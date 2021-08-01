@@ -6,9 +6,6 @@ const EmployeeModel = require('../models/EmployeeModel');
 const dotenv = require("dotenv");
 dotenv.config();
 
-const objId = new mongoose.Types.ObjectId().toString();
-
-
   
 const testData1 = {
     payInfo: {
@@ -52,7 +49,6 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    await EmployeeModel.deleteOne({_id: objId});
     await mongoose.connection.close();
 });
 
