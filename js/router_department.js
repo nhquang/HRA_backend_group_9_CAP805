@@ -1,8 +1,9 @@
 const express = require('express');
-const { query, validationResult } = require('express-validator');
+const { query, body, validationResult } = require('express-validator');
 const router = express.Router();
 const DepartmentModel = require('../models/DepartmentModel');
 const EmployeeModel = require('../models/EmployeeModel');
+const BranchModel = require('../models/BranchModel');
 
 router.get(''
     , query('branchId', 'must have branchId').notEmpty()
@@ -45,22 +46,53 @@ router.post('', async (req, res) => {
     });
 });
 
-router.put('/:id', async (req, res) => {
-    if(req.decoded.role !== 'admin'){
-        res.status(400).json({ message: "permission deny" });
-        return
-    }
+router.put('', async (req, res) => {
+    res.status(400).json({ message: "invalid parameters" });
+});
 
-    DepartmentModel.findOneAndUpdate({_id: req.params.id},
-        req.body, {new: true},(err, data)=>{
-            if (err) {
-                res.status(400).json({ message: err });
-            }
-            else {
-                res.status(200).json(data);
-            }
+router.put('/:id'
+    , body('branchId', 'must have branchId').notEmpty()
+    , body('name', 'must have name').notEmpty()
+    , body('description', 'must have description').notEmpty()
+    , async (req, res) => {
+
+        if(req.decoded.role !== 'admin'){
+            return res.status(400).json({ message: "permission deny" });
         }
-    );
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ message: "invalid parameters", errors: errors.array() });
+        }
+
+        //check department and branch exist
+        const department = await DepartmentModel.findOne({_id: req.params.id, active: true}).exec();
+        if(department==null){
+            return res.status(400).json({ message: "department not exists" });
+        }
+        const branch = await BranchModel.findOne({_id: req.body.branchId, active: true}).exec();
+        if(branch==null){
+            return res.status(400).json({ message: "branch not exists"});
+        }
+
+        //name can not be exists in the same branch
+        const sameNameDep = await DepartmentModel
+            .findOne({_id: {$ne: req.params.id}, branchId: req.body.branchId, name: req.body.name, active: true})
+            .exec();
+        if(sameNameDep!=null){
+            return res.status(400).json({ message: "department name exists"});
+        }
+
+        DepartmentModel.findOneAndUpdate({_id: req.params.id},
+            req.body, {new: true},(err, data)=>{
+                if (err) {
+                    res.status(400).json({ message: err });
+                }
+                else {
+                    res.status(200).json(data);
+                }
+            }
+        );
 });
 
 router.delete('/:id', async (req, res) => {
@@ -88,6 +120,24 @@ router.delete('/:id', async (req, res) => {
             }
         }
     );
+});
+
+router.post('/search'
+    , body('branchId', 'must have branchId').notEmpty()
+    , async (req, res) => {
+    const branchId = req.body.branchId;
+    const q = req.body.q;
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const list = await DepartmentModel
+        .find({branchId: branchId, name: { $regex: '.*' + q + '.*' } ,active: true})
+        .exec();
+
+    res.json(list);
 });
 
 module.exports = router
