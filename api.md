@@ -11,7 +11,7 @@ parameters: the register info json
     "activationCode": "xxx"
 }
 ```
-### POST /authentication/login
+### POST /authenticate/login
 parameters: the login info json
 ```json
 {
