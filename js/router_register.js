@@ -6,8 +6,16 @@ const EmployeeModel = require('../models/EmployeeModel');
 
 router.post(''
 
-    , body('username').notEmpty().bail().custom(value => {
-        return EmployeeModel.findOne({username: value}).then(user => {
+    , body('activationCode', 'must have activationCode').notEmpty().bail()
+        .custom((value, { req }) => {
+            return EmployeeModel.findOne({_id: value}).then(user => {
+                if (!user) {
+                    return Promise.reject('activation code not exists');
+                }
+            });
+        })
+    , body('username').notEmpty().bail().custom((value, { req }) => {
+        return EmployeeModel.findOne({_id: {$ne: req.body.activationCode}, username: value}).then(user => {
             if(user){
                 return Promise.reject('username exists, please choose another username');
             }
@@ -21,17 +29,6 @@ router.post(''
         // Indicates the success of this synchronous custom validator
         return true;
     })
-    , body('activationCode', 'must have activationCode').notEmpty().bail()
-        .custom((value, { req }) => {
-            return EmployeeModel.findOne({_id: value}).then(user => {
-                if (!user) {
-                    return Promise.reject('activation code not exists');
-                }else if(user.username && user.password){
-                    return Promise.reject('user already activated');
-                }
-            });
-        })
-
     , async (req, res) => {
 
         const username = req.body.username;
