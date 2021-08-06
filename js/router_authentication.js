@@ -24,7 +24,7 @@ router.post('/login',(req,res)=>{
                         const token = jwt.sign(payload, process.env.jwt_secret, {
                             expiresIn: '4h' 
                         });
-                        res.json({message: "Succeeded!", token: token});
+                        res.json({message: "Succeeded!", token: token, role: user.role});
                     }
                     else if(err) res.status(500).json({message:"Internal Server Error!"});
                     else res.json({message:'Failed!'});
