@@ -219,7 +219,7 @@ router.get('/:id', (req, res) => {
 //The hr_manager can add anyone except admin.
 //hr_staff can only add employees.
 router.post('/add_employee', (req, res) => {
-    // req.body.username = "";
+    req.body.username = "";      // Akash: The username and password are supposed to be empty until the user registers with their own username and password. You should get get rid of username field on the add and update employee pages
     req.body.password = "";
     if(req.decoded.role === "admin"
        || (req.decoded.role === "hr_manager" && req.body.role !== "admin")
