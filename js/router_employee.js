@@ -234,7 +234,7 @@ router.post('/add_employee', (req, res) => {
     }
     else {
         res.status(401).json({
-            message:"Unauthorized access!"
+            message:"You can't add new employee, if his/her is higher than yours!"
         });
     }
 });
@@ -260,7 +260,7 @@ router.put('/update_employee/:id', (req, res) => {
     }
     else{
         res.status(401).json({
-            message:"Unauthorized access!"
+            message:"You can't update the employee, if his/her is higher than yours!"
         });
     }
 });
