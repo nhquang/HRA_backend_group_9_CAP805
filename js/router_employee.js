@@ -219,12 +219,15 @@ router.get('/:id', (req, res) => {
 //The hr_manager can add anyone except admin.
 //hr_staff can only add employees.
 router.post('/add_employee', (req, res) => {
+    
     // req.body.username = "";
     req.body.password = "";
     if(req.decoded.role === "admin"
        || (req.decoded.role === "hr_manager" && req.body.role !== "admin")
        || (req.decoded.role === "hr_staff" && req.body.role === "employee")
     ){
+        let result = EmployeeModel.find({ "$or": { email: req.body.email, phone: req.body.phone } });
+        if(result) return res.status(400).json({ message: "Email or phone no. already exists." });
         EmployeeModel.create(req.body).then((employee)=>{
             res.json(employee);
         }).catch((err)=>{
