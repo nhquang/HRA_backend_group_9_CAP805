@@ -8,9 +8,9 @@ const dotenv = require("dotenv");
 dotenv.config();
 router.post('/login',(req,res)=>{
     if (req.body.username && req.body.password){
-        User.findOne({username: req.body.username}).lean().exec((err, user)=>{
+        User.findOne({username: req.body.username, stillEmployed: true}).lean().exec((err, user)=>{
             if(err)
-                res.status(500).json({message: "Internal server error"});
+                res.status(500).json({message: "Failed!"});
             else if(!user)
                 res.json({message:'Failed!'});
             else {
@@ -26,7 +26,7 @@ router.post('/login',(req,res)=>{
                         });
                         res.json({message: "Succeeded!", token: token, role: user.role});
                     }
-                    else if(err) res.status(500).json({message:"Internal Server Error!"});
+                    else if(err) res.status(500).json({message:"Failed!"});
                     else res.json({message:'Failed!'});
                 });
                 
