@@ -91,11 +91,7 @@ router.put('/:id'
             return res.status(400).json({ message: "invalid parameters", errors: errors.array() });
         }
 
-        //check department and branch exist
-        const department = await DepartmentModel.findOne({_id: req.params.id, active: true}).exec();
-        if(department==null){
-            return res.status(400).json({ message: "department not exists" });
-        }
+        //check branch exist
         const branch = await BranchModel.findOne({_id: req.body.branchId, active: true}).exec();
         if(branch==null){
             return res.status(400).json({ message: "branch not exists"});
