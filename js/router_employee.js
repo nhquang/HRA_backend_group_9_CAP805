@@ -219,15 +219,12 @@ router.get('/:id', (req, res) => {
 //The hr_manager can add anyone except admin.
 //hr_staff can only add employees.
 router.post('/add_employee', (req, res) => {
-    
-    // req.body.username = "";
+    req.body.username = "";      // Akash: The username and password are supposed to be empty until the user registers with their own username and password. You should get get rid of username field on the add and update employee pages
     req.body.password = "";
     if(req.decoded.role === "admin"
        || (req.decoded.role === "hr_manager" && req.body.role !== "admin")
        || (req.decoded.role === "hr_staff" && req.body.role === "employee")
     ){
-        let result = EmployeeModel.find({ "$or": { email: req.body.email, phone: req.body.phone } });
-        if(result) return res.status(400).json({ message: "Email or phone no. already exists." });
         EmployeeModel.create(req.body).then((employee)=>{
             res.json(employee);
         }).catch((err)=>{
@@ -237,7 +234,7 @@ router.post('/add_employee', (req, res) => {
     }
     else {
         res.status(401).json({
-            message:"Unauthorized access!"
+            message:"You can't add new employee, if his/her is higher than yours!"
         });
     }
 });
@@ -263,7 +260,7 @@ router.put('/update_employee/:id', (req, res) => {
     }
     else{
         res.status(401).json({
-            message:"Unauthorized access!"
+            message:"You can't update the employee, if his/her is higher than yours!"
         });
     }
 });
