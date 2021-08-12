@@ -62,7 +62,7 @@ router.post('/add_branch', (req, res) => {
             res.json(branch);
         }).catch((err)=>{
             console.log("An error occurred: ${err}" + err);
-            res.status(500).json({message: "Internal Server Error!"});
+            res.status(400).json({message: "Name already exist!"});
         });
     }
     else res.status(401).json({message:"Unauthorized access!"});
@@ -74,7 +74,7 @@ router.put('/update_branch/:id', (req, res) => {
             req.body, {new: true},(err, data)=>{
                 if (err) {
                     console.log("An error occurred: ${err}" + err);
-                    res.status(500).json({message: "Internal Server Error!"});
+                    res.status(400).json({message: "Name already exist!"});
                 }
                 else {
                     res.status(200).json(data);
