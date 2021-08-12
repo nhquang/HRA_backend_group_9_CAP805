@@ -23,6 +23,24 @@ router.get(''
     res.json(list);
 });
 
+router.get('/all'
+    , query('branchId', 'must have branchId').notEmpty()
+    , async (req, res) => {
+
+        const branchId = req.query.branchId;
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const list = await DepartmentModel
+            .find({branchId: branchId})
+            .exec();
+
+        res.json(list);
+    });
+
 router.get('/:id', async (req, res) => {
     DepartmentModel
         .findOne({_id: req.params.id})

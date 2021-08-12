@@ -151,7 +151,21 @@ return: status success (200) and the updated branch object, if added successfull
 ## 3. Department
 
 ### GET /departments?branchId=xxx
-return: department list for the branch
+return: department list for the branch (not include inactive departments)
+```json
+[
+  {
+    "_id": "60ce5175e9d63211349116f2",
+    "branchId": "60ce287cad08cf5b0d94732a",
+    "description": "Human Resources",
+    "name": "Human Resources",
+    "active": true
+  }
+]
+```
+
+### GET /departments/all?branchId=xxx
+return: department list for the branch (include inactive departments)
 ```json
 [
   {
