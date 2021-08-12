@@ -229,7 +229,7 @@ router.post('/add_employee', (req, res) => {
             res.json(employee);
         }).catch((err)=>{
             console.log("An error occurred: ${err}" + err);
-            res.status(500).json({message: "Internal Server Error!"});
+            res.status(500).json({message: "Email or Phone already exist!"});
         });
     }
     else {
