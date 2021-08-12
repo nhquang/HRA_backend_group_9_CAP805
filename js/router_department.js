@@ -39,6 +39,14 @@ router.post('', async (req, res) => {
         return
     }
 
+    //name can not be exists in the same branch
+    const sameNameDep = await DepartmentModel
+        .findOne({branchId: req.body.branchId, name: req.body.name, active: true})
+        .exec();
+    if(sameNameDep!=null){
+        return res.status(400).json({ message: "department name exists"});
+    }
+
     DepartmentModel.create(req.body).then((data)=>{
         res.json(data);
     }).catch((err)=>{
