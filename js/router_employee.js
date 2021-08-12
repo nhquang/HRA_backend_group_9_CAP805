@@ -225,12 +225,54 @@ router.post('/add_employee', (req, res) => {
        || (req.decoded.role === "hr_manager" && req.body.role !== "admin")
        || (req.decoded.role === "hr_staff" && req.body.role === "employee")
     ){
-        EmployeeModel.create(req.body).then((employee)=>{
-            res.json(employee);
-        }).catch((err)=>{
-            console.log("An error occurred: ${err}" + err);
-            res.status(500).json({message: "Email or Phone already exist!"});
-        });
+        if(req.body.role === "hr_manager"){
+            EmployeeModel
+            .find({stillEmployed: true, role: 'hr_manager'})
+            .exec()
+            .then((list)=>{
+                if(list.length === 0){
+                    EmployeeModel.create(req.body).then((employee)=>{
+                        res.json(employee);
+                    }).catch((err)=>{
+                        console.log("An error occurred: ${err}" + err);
+                        res.status(500).json({message: "Email or Phone already exist!"});
+                    });
+                }
+                else res.status(500).json({message: "There is already an hr_manager in the system!"});
+            })
+            .catch((err) => {
+                console.log("An error occurred: ${err}" + err);
+                res.status(500).json({message: "Internal Server Error!"});
+            });
+        }
+        else if (req.body.role === "admin"){
+            EmployeeModel
+            .find({stillEmployed: true, role: 'admin'})
+            .exec()
+            .then((list)=>{
+                if(list.length === 0){
+                    EmployeeModel.create(req.body).then((employee)=>{
+                        res.json(employee);
+                    }).catch((err)=>{
+                        console.log("An error occurred: ${err}" + err);
+                        res.status(500).json({message: "Email or Phone already exist!"});
+                    });
+                }
+                else res.status(500).json({message: "There is already an admin in the system!"});
+            })
+            .catch((err) => {
+                console.log("An error occurred: ${err}" + err);
+                res.status(500).json({message: "Internal Server Error!"});
+            });
+        }
+        else {
+            EmployeeModel.create(req.body).then((employee)=>{
+                res.json(employee);
+            }).catch((err)=>{
+                console.log("An error occurred: ${err}" + err);
+                res.status(500).json({message: "Email or Phone already exist!"});
+            });
+        }
     }
     else {
         res.status(401).json({
@@ -246,17 +288,69 @@ router.put('/update_employee/:id', (req, res) => {
        || (req.decoded.role === "hr_staff" && req.body.role === "employee")
     )
     {
-        EmployeeModel.findOneAndUpdate({_id: req.params.id},
-            req.body, {new: true},(err, data)=>{
-                if (err) {
-                    console.log("An error occurred: ${err}" + err);
-                    res.status(500).json({message: "Email or Phone already exist!"});
+        if(req.body.role === 'admin'){
+            EmployeeModel
+            .find({stillEmployed: true, role: 'admin'})
+            .exec()
+            .then((list)=>{
+                if(list.length === 0){
+                    EmployeeModel.findOneAndUpdate({_id: req.params.id},
+                        req.body, {new: true},(err, data)=>{
+                            if (err) {
+                                console.log("An error occurred: ${err}" + err);
+                                res.status(500).json({message: "Email or Phone already exist!"});
+                            }
+                            else {
+                                res.status(200).json(data);
+                            }
+                        }
+                    );
                 }
-                else {
-                    res.status(200).json(data);
+                else res.status(500).json({message: "There is already an admin in the system!"});
+            })
+            .catch((err) => {
+                console.log("An error occurred: ${err}" + err);
+                res.status(500).json({message: "Internal Server Error!"});
+            });
+        }
+        else if (req.body.role === 'hr_manager'){
+            EmployeeModel
+            .find({stillEmployed: true, role: 'hr_manager'})
+            .exec()
+            .then((list)=>{
+                if(list.length === 0){
+                    EmployeeModel.findOneAndUpdate({_id: req.params.id},
+                        req.body, {new: true},(err, data)=>{
+                            if (err) {
+                                console.log("An error occurred: ${err}" + err);
+                                res.status(500).json({message: "Email or Phone already exist!"});
+                            }
+                            else {
+                                res.status(200).json(data);
+                            }
+                        }
+                    );
                 }
+                else res.status(500).json({message: "There is already an hr_manager in the system!"});
+            })
+            .catch((err) => {
+                console.log("An error occurred: ${err}" + err);
+                res.status(500).json({message: "Internal Server Error!"});
+            });
+        }
+        else {
+            EmployeeModel.findOneAndUpdate({_id: req.params.id},
+                req.body, {new: true},(err, data)=>{
+                    if (err) {
+                        console.log("An error occurred: ${err}" + err);
+                        res.status(500).json({message: "Email or Phone already exist!"});
+                    }
+                    else {
+                        res.status(200).json(data);
+                    }
             }
-        );
+            );
+        }
     }
     else{
         res.status(401).json({
