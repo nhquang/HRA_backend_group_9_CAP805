@@ -250,7 +250,7 @@ router.put('/update_employee/:id', (req, res) => {
             req.body, {new: true},(err, data)=>{
                 if (err) {
                     console.log("An error occurred: ${err}" + err);
-                    res.status(500).json({message: "Internal Server Error!"});
+                    res.status(500).json({message: "Email or Phone already exist!"});
                 }
                 else {
                     res.status(200).json(data);
