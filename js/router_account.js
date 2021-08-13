@@ -8,7 +8,11 @@ const bcrypt = require('bcrypt');
 dotenv.config();
 
 router.get('/',(req,res) =>{
-    res.json({username: req.decoded.username});
+    EmployeeModel.findOne({_id: req.decoded.id}).then((data)=>{
+        res.json({username: data.username});
+    }).catch((e) => {
+        res.status(500).json({message:"Internal Server Error!"});
+    });
 });
 
 router.post('/update_account'
